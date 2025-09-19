@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sit722-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sit722-backend
+  template:
+    metadata:
+      labels:
+        app: sit722-backend
+    spec:
+      containers:
+        - name: backend
+          image: ars224750073acr.azurecr.io/sit722-backend:latest
+          ports:
+            - containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sit722-backend-service
+spec:
+  selector:
+    app: sit722-backend
+  ports:
+    - port: 80
+      targetPort: 5000
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sit722-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sit722-frontend
+  template:
+    metadata:
+      labels:
+        app: sit722-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ars224750073acr.azurecr.io/sit722-frontend:latest
+          ports:
+            - containerPort: 3000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sit722-frontend-service
+spec:
+  selector:
+    app: sit722-frontend
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: LoadBalancer
