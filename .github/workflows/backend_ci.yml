@@ -1,4 +1,4 @@
-name: Backend CI - Test, Build and Push Images to ACR
+﻿name: Backend CI - Test, Build and Push Images to ACR
 
 on:
   workflow_dispatch:
@@ -6,8 +6,8 @@ on:
     branches:
       - main
     paths:
-      - 'backend/**'
-      - '.github/workflows/backend_ci.yml'
+      - "backend/**"
+      - ".github/workflows/backend_ci.yml"
 
 env:
   ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
@@ -31,7 +31,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
+
       order_db:
         image: postgres:15
         env:
@@ -53,7 +53,7 @@ jobs:
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install dependencies
         run: |
@@ -72,8 +72,7 @@ jobs:
           POSTGRES_DB: products
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-        run: |
-          pytest tests --maxfail=1 --disable-warnings -q
+        run: pytest tests --maxfail=1 --disable-warnings -q
 
       - name: Run order_service tests
         working-directory: backend/order_service
@@ -83,8 +82,7 @@ jobs:
           POSTGRES_DB: orders
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-        run: |
-          pytest tests --maxfail=1 --disable-warnings -q
+        run: pytest tests --maxfail=1 --disable-warnings -q
 
   build_and_push_images:
     runs-on: ubuntu-latest
@@ -112,8 +110,6 @@ jobs:
           docker build -t ${{ env.ACR_LOGIN_SERVER }}/order_service:latest ./backend/order_service/
           docker push ${{ env.ACR_LOGIN_SERVER }}/order_service:latest
 
-      # Fixed logout step
       - name: Logout from Azure
         if: always()
-        run: |
-          az account clear || true
+        run: az account clear || true
