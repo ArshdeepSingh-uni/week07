@@ -1,4 +1,4 @@
-name: SIT722 CI/CD – Backend + Frontend Deploy
+name: SIT722 CI/CD â€“ Backend + Frontend Deploy
 
 on:
   workflow_dispatch:
