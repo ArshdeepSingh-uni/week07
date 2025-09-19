@@ -1,13 +1,14 @@
-name: SIT722 CI – Backend + Frontend Build & Push
+name: SIT722 CI/CD – Backend + Frontend Deploy
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:   # manual trigger
   push:
     branches:
       - main
     paths:
       - 'backend/**'
       - 'frontend/**'
+      - 'k8s/**'
       - '.github/workflows/deploy.yml'
 
 env:
@@ -17,23 +18,29 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     steps:
+      # Checkout repo
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Log in to Azure
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # Log in to ACR
       - name: ACR Login
         run: az acr login --name ${{ env.ACR_LOGIN_SERVER }}
 
+      # Build & push backend image
       - name: Build & Push Backend
         run: |
           docker build -t ${{ env.ACR_LOGIN_SERVER }}/sit722-backend:${{ env.IMAGE_TAG }} ./backend
           docker push ${{ env.ACR_LOGIN_SERVER }}/sit722-backend:${{ env.IMAGE_TAG }}
 
+      # Build & push frontend image
       - name: Build & Push Frontend
         run: |
           docker build -t ${{ env.ACR_LOGIN_SERVER }}/sit722-frontend:${{ env.IMAGE_TAG }} ./frontend
